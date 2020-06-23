@@ -2,6 +2,8 @@
 
 namespace Omnipay\AuthorizeNet\Message;
 
+use Omnipay\AuthorizeNet\AuthorizeNetItem;
+use Omnipay\AuthorizeNet\AuthorizeNetItemBag;
 use Omnipay\AuthorizeNet\Model\CardReference;
 use Omnipay\AuthorizeNet\Model\TransactionReference;
 use Omnipay\Common\CreditCard;
@@ -360,6 +362,33 @@ abstract class AIMAbstractRequest extends AbstractRequest
             $i++;
             $data->transactionRequest->transactionSettings->setting[$i]->settingName = 'duplicateWindow';
             $data->transactionRequest->transactionSettings->setting[$i]->settingValue = $this->getDuplicateWindow();
+        }
+
+        return $data;
+    }
+
+    protected function addItemData(\SimpleXMLElement $data)
+    {
+        /** @var AuthorizeNetItemBag $itemBag */
+        $itemBag = $this->getItems();
+
+        if (empty($itemBag)) {
+            return $data;
+        }
+
+
+        foreach ($itemBag->all() as $item) {
+            /* @var $item AuthorizeNetItem */
+
+            $element = new \SimpleXMLElement;
+            $element->itemId = $item->getItemId();
+            $element->name = $item->getName();
+            $element->description = $item->getDescription();
+            $element->quantity = $item->getQuantity();
+            $element->unitPrice = $item->getPrice();
+            $element->taxable = $item->getTaxable();
+
+            $data->transactionRequest->lineItems->addChild('lineItem', $element);
         }
 
         return $data;
