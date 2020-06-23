@@ -1,5 +1,5 @@
 {
-    "name": "omnipay/authorizenet",
+    "name": "venveo/authorizenet",
     "type": "library",
     "description": "Authorize.Net gateway for the Omnipay payment processing library",
     "keywords": [
