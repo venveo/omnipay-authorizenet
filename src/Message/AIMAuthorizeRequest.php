@@ -29,15 +29,26 @@ class AIMAuthorizeRequest extends AIMAbstractRequest
 
     public function getData()
     {
+        // This order is important!!!
         $this->validate('amount');
         $data = $this->getBaseData();
         $data->transactionRequest->amount = $this->getAmount();
         $this->addPayment($data);
         $this->addSolutionId($data);
-        $this->addBillingData($data);
+        $this->addOrderData($data);
+        $this->addItemData($data);
+        // Tax would go here
+        // Duty would go here
+        // Shipping would go here
+        // poNumber would go here
+        // taxExempt would go here
+        $this->addBillingData($data); // Also includes shipping data
         $this->addCustomerIP($data);
         $this->addRetail($data);
         $this->addTransactionSettings($data);
+        // User fields would go here
+        // Surcharge would go here
+        // Tip would go here
 
         return $data;
     }
@@ -165,7 +176,7 @@ class AIMAuthorizeRequest extends AIMAbstractRequest
     {
         return $this->setParameter('deviceType', $value);
     }
-    
+
     public function getMarketType()
     {
         return $this->getParameter('marketType');

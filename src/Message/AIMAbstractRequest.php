@@ -295,6 +295,16 @@ abstract class AIMAbstractRequest extends AbstractRequest
         }
     }
 
+    protected function addOrderData(\SimpleXMLElement $data) {
+
+        /** @var mixed $req */
+        $req = $data->transactionRequest;
+
+        $req->order->invoiceNumber = $this->getInvoiceNumber();
+        $req->order->description = $this->getDescription();
+        return $data;
+    }
+
     /**
      * Adds billing data to a partially filled request data object.
      *
@@ -306,10 +316,6 @@ abstract class AIMAbstractRequest extends AbstractRequest
     {
         /** @var mixed $req */
         $req = $data->transactionRequest;
-
-        // The order must come before the customer ID.
-        $req->order->invoiceNumber = $this->getInvoiceNumber();
-        $req->order->description = $this->getDescription();
 
         // Merchant assigned customer ID
         $customer = $this->getCustomerId();
@@ -376,19 +382,32 @@ abstract class AIMAbstractRequest extends AbstractRequest
             return $data;
         }
 
-
-        foreach ($itemBag->all() as $item) {
-            /* @var $item AuthorizeNetItem */
-
-            $element = new \SimpleXMLElement;
-            $element->itemId = $item->getItemId();
-            $element->name = $item->getName();
-            $element->description = $item->getDescription();
-            $element->quantity = $item->getQuantity();
-            $element->unitPrice = $item->getPrice();
-            $element->taxable = $item->getTaxable();
-
-            $data->transactionRequest->lineItems->addChild('lineItem', $element);
+        /* @var $item AuthorizeNetItem */
+        foreach ($itemBag->all() as $idx => $item) {
+            // 31 characters
+            if ($item->getItemId()) {
+                $data->transactionRequest->lineItems->lineItem[$idx]->itemId = $item->getItemId();
+            }
+            // 31 characters
+            if ($item->getName()) {
+                $data->transactionRequest->lineItems->lineItem[$idx]->name = $item->getName();
+            }
+            // 255 characters
+            if ($item->getDescription()) {
+                $data->transactionRequest->lineItems->lineItem[$idx]->description = $item->getDescription();
+            }
+            // Up to 4 decimal places
+            if ($item->getQuantity()) {
+                $data->transactionRequest->lineItems->lineItem[$idx]->quantity = $item->getQuantity();
+            }
+            // Decimal up to 4 decimal places
+            if ($item->getPrice()) {
+                $data->transactionRequest->lineItems->lineItem[$idx]->unitPrice = $item->getPrice();
+            }
+            // boolean
+            if (is_bool($item->getTaxable())) {
+                $data->transactionRequest->lineItems->lineItem[$idx]->taxable = $item->getTaxable();
+            }
         }
 
         return $data;
