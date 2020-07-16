@@ -137,6 +137,67 @@ abstract class AIMAbstractRequest extends AbstractRequest
         return $this->setParameter('authCode', $value);
     }
 
+    public function getTaxAmount()
+    {
+        return $this->getParameter('taxAmount');
+    }
+
+    public function setTaxAmount($value)
+    {
+        return $this->setParameter('taxAmount', $value);
+    }
+
+    public function getTaxName()
+    {
+        return $this->getParameter('taxName');
+    }
+
+    public function setTaxName($value)
+    {
+        return $this->setParameter('taxName', $value);
+    }
+
+    public function getTaxDescription()
+    {
+        return $this->getParameter('taxDescription');
+    }
+
+    public function setTaxDescription($value)
+    {
+        return $this->setParameter('taxDescription', $value);
+    }
+
+
+    public function getShippingAmount()
+    {
+        return $this->getParameter('shippingAmount');
+    }
+
+    public function setShippingAmount($value)
+    {
+        return $this->setParameter('shippingAmount', $value);
+    }
+
+    public function getShippingName()
+    {
+        return $this->getParameter('shippingName');
+    }
+
+    public function setShippingName($value)
+    {
+        return $this->setParameter('shippingName', $value);
+    }
+
+    public function getShippingDescription()
+    {
+        return $this->getParameter('shippingDescription');
+    }
+
+    public function setShippingDescription($value)
+    {
+        return $this->setParameter('shippingDescription', $value);
+    }
+
     /**
      * @return TransactionReference
      */
@@ -295,7 +356,8 @@ abstract class AIMAbstractRequest extends AbstractRequest
         }
     }
 
-    protected function addOrderData(\SimpleXMLElement $data) {
+    protected function addOrderData(\SimpleXMLElement $data)
+    {
 
         /** @var mixed $req */
         $req = $data->transactionRequest;
@@ -410,6 +472,35 @@ abstract class AIMAbstractRequest extends AbstractRequest
             }
         }
 
+        return $data;
+    }
+
+
+    protected function addTaxData(\SimpleXMLElement $data)
+    {
+        if ($this->getTaxAmount() !== null) {
+            $data->transactionRequest->tax->amount = $this->getTaxAmount();
+        }
+        if ($this->getTaxName() !== null) {
+            $data->transactionRequest->tax->name = $this->getTaxName();
+        }
+        if ($this->getTaxDescription() !== null) {
+            $data->transactionRequest->tax->description = $this->getTaxDescription();
+        }
+        return $data;
+    }
+
+    protected function addShippingData(\SimpleXMLElement $data)
+    {
+        if ($this->getShippingAmount() !== null) {
+            $data->transactionRequest->shipping->amount = $this->getTaxAmount();
+        }
+        if ($this->getShippingName() !== null) {
+            $data->transactionRequest->shipping->name = $this->getShippingName();
+        }
+        if ($this->getShippingDescription() !== null) {
+            $data->transactionRequest->shipping->description = $this->getShippingDescription();
+        }
         return $data;
     }
 }

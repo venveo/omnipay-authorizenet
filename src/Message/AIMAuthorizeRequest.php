@@ -37,9 +37,9 @@ class AIMAuthorizeRequest extends AIMAbstractRequest
         $this->addSolutionId($data);
         $this->addOrderData($data);
         $this->addItemData($data);
-        // Tax would go here
+        $this->addTaxData($data);
         // Duty would go here
-        // Shipping would go here
+        $this->addShippingData($data);
         // poNumber would go here
         // taxExempt would go here
         $this->addBillingData($data); // Also includes shipping data
