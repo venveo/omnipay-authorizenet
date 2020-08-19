@@ -55,7 +55,7 @@ class AIMRefundRequestTest extends TestCase
         $this->assertEquals('TRANS_ID', $data->transactionRequest->refTransId);
         $this->assertEquals('23.32', $data->transactionRequest->amount);
         $this->assertEquals('1111', $data->transactionRequest->payment->creditCard->cardNumber);
-        $this->assertObjectNotHasAttribute('expirationDate', $data->transactionRequest->payment->creditCard);
+        $this->assertEquals('XXXX', $data->transactionRequest->payment->creditCard->expirationDate);
     }
 
     public function testGetDataShouldFail()

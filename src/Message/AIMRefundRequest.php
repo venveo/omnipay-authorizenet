@@ -27,20 +27,22 @@ class AIMRefundRequest extends AIMAbstractRequest
         $data->transactionRequest->amount = $this->getParameter('amount');
 
         $transactionRef = $this->getTransactionReference();
-        if ($card = $transactionRef->getCard()) {
+        $card = $transactionRef->getCard();
+        // If we have the full credit card number saved
+        if ($card && strlen($card->number) > 4) {
             $data->transactionRequest->payment->creditCard->cardNumber = $card->number;
             $data->transactionRequest->payment->creditCard->expirationDate = $card->expiry;
         } elseif ($cardRef = $transactionRef->getCardReference()) {
             $data->transactionRequest->profile->customerProfileId = $cardRef->getCustomerProfileId();
             $data->transactionRequest->profile->paymentProfile->paymentProfileId = $cardRef->getPaymentProfileId();
         } else {
+            // No expiration, so use last 4 provided as a card and transaction reference
             // Transaction reference only contains the transaction ID, so a card is required
             $this->validate('card');
             $card = $this->getCard();
             $data->transactionRequest->payment->creditCard->cardNumber = $card->getNumberLastFour();
-            if ($card->getExpiryMonth()) {
-                $data->transactionRequest->payment->creditCard->expirationDate = $card->getExpiryDate('my');
-            }
+            // This is not a mistake.
+            $data->transactionRequest->payment->creditCard->expirationDate = 'XXXX';
         }
         $data->transactionRequest->refTransId = $transactionRef->getTransId();
 
